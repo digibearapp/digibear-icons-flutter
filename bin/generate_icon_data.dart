@@ -35,11 +35,9 @@ String generateDbIconStyleSwitchCases() {
 
   for (final iconStyle in DbIconStyle.values) {
     final iconStyleName = iconStyle.name;
-    final cappedIconStyleName = iconStyle.cappedName;
     final switchCase = '''
-      case Db${cappedIconStyleName}IconStyle.$iconStyleName:
-        return $iconStyleName;
-    ''';
+      case DbIconStyle.$iconStyleName:
+        return $iconStyleName;''';
     sb.writeln(switchCase);
   }
 
@@ -84,7 +82,7 @@ library digibear_icons_flutter;
 
 $header
 
-import 'package:digibear_icons_flutter/src/digibear_icon_styles.dart';
+import 'package:digibear_icons_flutter/src/db_icon_styles.dart';
 import 'package:flutter/widgets.dart';
 
 /// [IconData] class for a [DbIcon]
@@ -106,7 +104,6 @@ ${generateIconDataExtensions()}
 ''';
 }
 
-/// Digibear Icons generator
 void main(List<String> arguments) {
   final resultFile = File(dbIconDataFilePath);
   resultFile.writeAsStringSync(generateDbIconData());

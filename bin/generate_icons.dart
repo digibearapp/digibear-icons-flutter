@@ -2,27 +2,25 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:digibear_icons_flutter/src/db_icon_styles.dart';
-import 'package:flutter/material.dart';
 
 import 'constants.dart';
 import 'paths.dart';
 import 'utils.dart';
 
-String generateDbIconDoc(String iconName, DbIconStyle iconStyle) {
+String generateDbIconDoc(String fullName, DbIconStyle iconStyle) {
+  final nameWithoutStyleArray = fullName.split('-');
+  nameWithoutStyleArray.removeLast();
+  final nameWithoutStyle = nameWithoutStyleArray.join('-');
   final iconStyleName = iconStyle.name;
   return '''
-    /// [$iconName-$iconStyleName](https://raw.githubusercontent.com/digibearapp/digibear-icons/master/assets/$iconStyleName/$iconName-$iconStyleName.svg)
-  ''';
+    /// [$fullName](https://raw.githubusercontent.com/digibearapp/digibear-icons/main/icons/$iconStyleName/$nameWithoutStyle.svg)''';
 }
 
-//  static const dayRainDuotone = DigibearDuotoneIconData(
-//     0xef73,
-//     secondary: [DigibearDuotoneIconData(0xef72)],
-//   );
-
 String generateIconDataInstanceFromIconStyleAndCode(
-    DbIconStyle iconStyle, String code) {
-  final iconStyleCappedName = iconStyle.name;
+  DbIconStyle iconStyle,
+  String code,
+) {
+  final iconStyleCappedName = iconStyle.cappedName;
   return '''
   Db${iconStyleCappedName}IconData($code)
   ''';
@@ -33,28 +31,30 @@ String generateDbIconDefinition(
   DbIconStyle iconStyle,
   List<String> codes,
 ) {
-  final iconStyleCappedName = iconStyle.name;
+  final iconStyleCappedName = iconStyle.cappedName;
   final firstCode = codes[0];
   final restCodes = codes.skip(1);
   final secondaryCodes = restCodes.map(
-      (code) => generateIconDataInstanceFromIconStyleAndCode(iconStyle, code));
-  final secondary = iconStyle.isMulticolor
+    (code) => generateIconDataInstanceFromIconStyleAndCode(iconStyle, code),
+  );
+  final secondary = iconStyle.isMulticolor && restCodes.isNotEmpty
       ? '''
   , secondary: [${secondaryCodes.join(",")}],
   '''
       : '';
 
   return '''
-  static const $iconName$iconStyleCappedName = Db${iconStyleCappedName}IconData($firstCode)$secondary;
+  static const $iconName$iconStyleCappedName = Db${iconStyleCappedName}IconData($firstCode$secondary);
   ''';
 }
 
 String generateDbIcon(
+  String fullName,
   String iconName,
   DbIconStyle iconStyle,
   List<String> codes,
 ) {
-  final doc = generateDbIconDoc(iconName, iconStyle);
+  final doc = generateDbIconDoc(fullName, iconStyle);
   final definition = generateDbIconDefinition(iconName, iconStyle, codes);
 
   return '''
@@ -73,7 +73,7 @@ List<String> extractCodesFromIcon(dynamic icon) {
 
   return null != maybeMultiCodes
       ? maybeMultiCodes.map(convertCodeToHex).toList()
-      : [convertCodeToHex(icon.properties['code'] as int)];
+      : [convertCodeToHex(icon['properties']['code'] as int)];
 }
 
 String generateDbIconsForStyle(dynamic icons, DbIconStyle iconStyle) {
@@ -85,7 +85,7 @@ String generateDbIconsForStyle(dynamic icons, DbIconStyle iconStyle) {
     final iconName = formatName(fullName);
     final codes = extractCodesFromIcon(icon);
 
-    final dbIcon = generateDbIcon(iconName, iconStyle, codes);
+    final dbIcon = generateDbIcon(fullName, iconName, iconStyle, codes);
     sb.writeln(dbIcon);
   }
   return sb.toString();
@@ -108,7 +108,7 @@ library digibear_icons_flutter;
 
 $header
 
-import 'package:digibear_icons_flutter/src/digibear_icon_data.dart';
+import 'package:digibear_icons_flutter/src/db_icon_data.dart';
 
 abstract class DigibearIcons {
   ${generateDbIconsForStyles(icons)}
@@ -116,7 +116,6 @@ abstract class DigibearIcons {
 ''';
 }
 
-/// Digibear Icons generator
 void main(List<String> arguments) {
   final jsonFile = File(arguments.first);
   assert(!jsonFile.existsSync());
@@ -125,10 +124,19 @@ void main(List<String> arguments) {
   final iconStyle =
       DbIconStyle.values.where((iconStyle) => iconStyle.name == readStyle);
   if (iconStyle.isEmpty) {
-    throw ErrorDescription(
-        'Style missing/not matching: got $readStyle but available styles are the following: ${DbIconStyle.values.map((iconStyle) => iconStyle.name)}, you probably have to add the missing style to the ');
+    throw MissingStyleError(
+      'Style missing/not matching: got $readStyle but available styles are the following: ${DbIconStyle.values.map((iconStyle) => iconStyle.name)}, you probably have to add the missing style to the ',
+    );
   }
 
   final resultFile = File(dbIconsFilePath);
   resultFile.writeAsStringSync(generateDbIcons(icons));
+}
+
+class MissingStyleError extends Error {
+  String msg;
+  MissingStyleError(this.msg);
+
+  @override
+  String toString() => msg;
 }

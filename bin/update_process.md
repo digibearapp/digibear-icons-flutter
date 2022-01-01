@@ -9,5 +9,4 @@
 Adding a new Style ?
 
 1. Add the new style to package:digibear_icons_flutter/src/digibear_icon_styles
-2. Add the new style to the steps in update.sh
-3. Run the update process above
+2. Run the update process above

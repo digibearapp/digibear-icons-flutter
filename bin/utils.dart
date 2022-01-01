@@ -1,6 +1,7 @@
 /// Format the icon name in camelCase
 String formatName(String name) {
-  final splitName = name.toLowerCase().split('-').removeLast();
+  final splitName = name.toLowerCase().split('-');
+  splitName.removeLast();
 
   final formattedNameBuffer = StringBuffer(splitName[0]);
   if (splitName.length == 1) return formattedNameBuffer.toString();

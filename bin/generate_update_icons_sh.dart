@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:digibear_icons_flutter/digibear_icons_flutter.dart';
+import 'package:digibear_icons_flutter/src/db_icon_styles.dart';
 
 import 'constants.dart';
 import 'paths.dart';
@@ -11,7 +11,7 @@ String generateJsonUnzips() {
   for (final iconStyle in DbIconStyle.values) {
     final iconStyleName = iconStyle.name;
     final unzip = '''
-    unzip -j -o ./digibear-icons.zip "digibear-icons/$iconStyleName/selection.json" -d .
+    unzip -j -o ./digibear-icons.zip "digibear-icons/fonts/$iconStyleName/selection.json" -d .
     mv selection.json digibear-icons-$iconStyleName.json
     ''';
     sb.writeln(unzip);
@@ -26,7 +26,7 @@ String generateTtfUnzips() {
   for (final iconStyle in DbIconStyle.values) {
     final iconStyleName = iconStyle.name;
     final unzip = '''
-    unzip -j -o ./digibear-icons.zip "digibear-icons/$iconStyleName/fonts/digibear-icons-$iconStyleName.ttf" -d ../lib/fonts
+    unzip -j -o ./digibear-icons.zip "digibear-icons/fonts/$iconStyleName/fonts/digibear-icons-$iconStyleName.ttf" -d ../lib/fonts
     ''';
     sb.writeln(unzip);
   }
@@ -74,11 +74,11 @@ set -e
 echo "Downloading latest digibear icons release zip"
 JSON=\$(curl https://api.github.com/repos/digibearapp/digibear-icons/releases/latest)
 # Extract from the json the line with the key "browser_download_url"
-DOWNLOAD_URL=\$(curl -s https://api.github.com/repos/digibearapp/digibear-icons/releases/latest \
-        | grep browser_download_url \
+DOWNLOAD_URL=\$(curl -s https://api.github.com/repos/digibearapp/digibear-icons/releases/latest \\
+        | grep browser_download_url \\
         | cut -d '"' -f 4);
 # DOWNLOAD_URL=\$(grep "browser_download_url" <<< \$JSON | cut -d '"' -f 4)
-# DOWNLOAD_URL=\$(grep "browser_download_url.*zip" <<< \$JSON | cut -d : -f 2,3 | tr -d \")
+# DOWNLOAD_URL=\$(grep "browser_download_url.*zip" <<< \$JSON | cut -d : -f 2,3 | tr -d \\")
 
 echo "-------- DOWNLOAD URL:"
 echo "\$DOWNLOAD_URL"
@@ -103,9 +103,9 @@ ${generateIconGeneration()}
 
 dart ./generate_icon_data.dart
 dart ./generate_db_icon.dart
-dart format $dbIconDataFilePath.dart
-dart format $dbIconsFilePath.dart
-dart format $dbIconFilePath.dart
+dart format $dbIconDataFilePath
+dart format $dbIconsFilePath
+dart format $dbIconFilePath
 
 echo "All files generated"
 
@@ -115,8 +115,7 @@ ${generateFileRemovals()}
 ''';
 }
 
-/// Digibear Icons generator
 void main(List<String> arguments) {
-  final resultFile = File(updateShPath);
+  final resultFile = File(updateIconsShPath);
   resultFile.writeAsStringSync(generateUpdateSh());
 }

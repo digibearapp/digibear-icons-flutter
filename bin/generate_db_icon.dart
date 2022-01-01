@@ -1,20 +1,16 @@
 import 'dart:io';
 
-import 'package:digibear_icons_flutter/digibear_icons_flutter.dart';
+import 'package:digibear_icons_flutter/src/db_icon_styles.dart';
 
 import 'paths.dart';
 
-// switch (icon.runtimeType) {
-//       case DbDuotoneIconData:
-//         return buildDuotoneIcon(primaryIcon, icon as DbDuotoneIconData);
-//       default:
-//         return primaryIcon;
-//     }
+List<DbIconStyle> get multicolorIconStyles =>
+    DbIconStyle.values.where((iconStyle) => iconStyle.isMulticolor).toList();
 
 String generateDbIconDataSwitchCases() {
   final sb = StringBuffer();
 
-  for (final iconStyle in DbIconStyle.values) {
+  for (final iconStyle in multicolorIconStyles) {
     final cappedIconStyleName = iconStyle.cappedName;
     final switchCase = '''
       case Db${cappedIconStyleName}IconData:
@@ -26,20 +22,10 @@ String generateDbIconDataSwitchCases() {
   return sb.toString();
 }
 
-// Widget buildDuotoneIcon(DbDuotoneIconData icon) {
-//       return Stack(
-//         alignment: AlignmentDirectional.center,
-//         children: [
-//           Icon(icon, color: color, size: size),
-//           if (null != icon.secondary) ..._buildSecondaryIcons(icon.secondary!),
-//         ],
-//       );
-//     }
-
 String generateDbIconBuildMethods() {
   final sb = StringBuffer();
 
-  for (final iconStyle in DbIconStyle.values) {
+  for (final iconStyle in multicolorIconStyles) {
     final cappedIconStyleName = iconStyle.cappedName;
     final switchCase = '''
     Widget build${cappedIconStyleName}Icon(Db${cappedIconStyleName}IconData icon) {
@@ -60,7 +46,9 @@ String generateDbIconBuildMethods() {
 
 String generateDbIcon() {
   return '''
-import 'package:digibear_icons_flutter/digibear_icons_flutter.dart';
+library digibear_icons_flutter;
+import 'package:digibear_icons_flutter/src/db_icon_data.dart';
+import 'package:digibear_icons_flutter/src/db_icon_styles.dart';
 import 'package:flutter/material.dart';
 
 class DbIcon extends StatelessWidget {
@@ -85,7 +73,8 @@ class DbIcon extends StatelessWidget {
     final iconTheme = theme.iconTheme;
     final color = this.color ?? iconTheme.color ?? Colors.black;
 
-    if (!iconStyle.isMulticolor) return Icon(icon, color: color, size: size);
+    final primaryIcon = Icon(icon, color: color, size: size);
+    if (!iconStyle.isMulticolor) return primaryIcon;
 
     final secondaryColor = this.secondaryColor ?? color.withOpacity(.2);
 
@@ -111,7 +100,6 @@ class DbIcon extends StatelessWidget {
 ''';
 }
 
-/// Digibear Icons generator
 void main(List<String> arguments) {
   final resultFile = File(dbIconFilePath);
   resultFile.writeAsStringSync(generateDbIcon());

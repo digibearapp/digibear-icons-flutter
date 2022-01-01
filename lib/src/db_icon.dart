@@ -1,4 +1,7 @@
-import 'package:digibear_icons_flutter/digibear_icons_flutter.dart';
+library digibear_icons_flutter;
+
+import 'package:digibear_icons_flutter/src/db_icon_data.dart';
+import 'package:digibear_icons_flutter/src/db_icon_styles.dart';
 import 'package:flutter/material.dart';
 
 class DbIcon extends StatelessWidget {
@@ -23,7 +26,8 @@ class DbIcon extends StatelessWidget {
     final iconTheme = theme.iconTheme;
     final color = this.color ?? iconTheme.color ?? Colors.black;
 
-    if (!iconStyle.isMulticolor) return Icon(icon, color: color, size: size);
+    final primaryIcon = Icon(icon, color: color, size: size);
+    if (!iconStyle.isMulticolor) return primaryIcon;
 
     final secondaryColor = this.secondaryColor ?? color.withOpacity(.2);
 
@@ -50,6 +54,7 @@ class DbIcon extends StatelessWidget {
     switch (icon.runtimeType) {
       case DbDuotoneIconData:
         return buildDuotoneIcon(icon as DbDuotoneIconData);
+
       default:
         return primaryIcon;
     }

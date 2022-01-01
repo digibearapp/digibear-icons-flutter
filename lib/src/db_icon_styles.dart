@@ -1,3 +1,5 @@
+library digibear_icons_flutter;
+
 enum DbIconStyle { line, fill, duotone }
 
 extension DbIconStylesX on DbIconStyle {

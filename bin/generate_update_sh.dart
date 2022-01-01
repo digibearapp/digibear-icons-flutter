@@ -102,8 +102,10 @@ echo "Generating package digibear_icons.dart file"
 ${generateIconGeneration()}
 
 dart ./generate_icon_data.dart
-dart format ../lib/src/digibear_icon_data.dart
-dart format ../lib/src/digibear_icons.dart
+dart ./generate_db_icon.dart
+dart format $dbIconDataFilePath.dart
+dart format $dbIconsFilePath.dart
+dart format $dbIconFilePath.dart
 
 echo "All files generated"
 

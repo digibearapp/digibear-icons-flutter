@@ -30,14 +30,14 @@ String generateDbIconDataConstructorArgs() {
   return sb.toString();
 }
 
-String generateDbIconDataSwitchCases() {
+String generateDbIconStyleSwitchCases() {
   final sb = StringBuffer();
 
   for (final iconStyle in DbIconStyle.values) {
     final iconStyleName = iconStyle.name;
     final cappedIconStyleName = iconStyle.cappedName;
     final switchCase = '''
-      case Db${cappedIconStyleName}IconData.$iconStyleName:
+      case Db${cappedIconStyleName}IconStyle.$iconStyleName:
         return $iconStyleName;
     ''';
     sb.writeln(switchCase);
@@ -97,7 +97,7 @@ class DbIconData {
 
   IconData fromStyle(DbIconStyle style) {
     switch (style) {
-      ${generateDbIconDataSwitchCases()}
+      ${generateDbIconStyleSwitchCases()}
     }
   }
 }
@@ -108,6 +108,6 @@ ${generateIconDataExtensions()}
 
 /// Digibear Icons generator
 void main(List<String> arguments) {
-  final resultFile = File(digibearIconDataFilePath);
+  final resultFile = File(dbIconDataFilePath);
   resultFile.writeAsStringSync(generateDbIconData());
 }

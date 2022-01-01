@@ -129,6 +129,6 @@ void main(List<String> arguments) {
         'Style missing/not matching: got $readStyle but available styles are the following: ${DbIconStyle.values.map((iconStyle) => iconStyle.name)}, you probably have to add the missing style to the ');
   }
 
-  final resultFile = File(digibearIconsFilePath);
+  final resultFile = File(dbIconsFilePath);
   resultFile.writeAsStringSync(generateDbIcons(icons));
 }

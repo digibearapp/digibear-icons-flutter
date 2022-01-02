@@ -32,8 +32,8 @@ String generateDbIconBuildMethods() {
       return Stack(
         alignment: AlignmentDirectional.center,
         children: [
-          Icon(icon, color: color, size: size),
           if (null != icon.secondary) ..._buildSecondaryIcons(icon.secondary!),
+          Icon(icon, color: color, size: size),
         ],
       );
     }
@@ -48,12 +48,10 @@ String generateDbIcon() {
   return '''
 library digibear_icons_flutter;
 import 'package:digibear_icons_flutter/src/db_icon_data.dart';
-import 'package:digibear_icons_flutter/src/db_icon_styles.dart';
 import 'package:flutter/material.dart';
 
 class DbIcon extends StatelessWidget {
-  final IconData icon;
-  final DbIconStyle iconStyle;
+  final DbIconData icon;
   final double? size;
   final Color? color;
   final Color? secondaryColor;
@@ -61,7 +59,6 @@ class DbIcon extends StatelessWidget {
   const DbIcon(
     this.icon, {
     Key? key,
-    this.iconStyle = DbIconStyle.line,
     this.size,
     this.color,
     this.secondaryColor,
@@ -74,7 +71,7 @@ class DbIcon extends StatelessWidget {
     final color = this.color ?? iconTheme.color ?? Colors.black;
 
     final primaryIcon = Icon(icon, color: color, size: size);
-    if (!iconStyle.isMulticolor) return primaryIcon;
+    if (!icon.isMulticolor) return primaryIcon;
 
     final secondaryColor = this.secondaryColor ?? color.withOpacity(.2);
 

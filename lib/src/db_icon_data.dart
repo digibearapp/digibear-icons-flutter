@@ -5,61 +5,51 @@ library digibear_icons_flutter;
 // Copyright 2021 Digibear.
 // All rights reserved.
 
-import 'package:digibear_icons_flutter/src/db_icon_styles.dart';
 import 'package:flutter/widgets.dart';
 
 /// [IconData] class for a [DbIcon]
-class DbIconData {
-  final DbLineIconData line;
-  final DbFillIconData fill;
-  final DbDuotoneIconData duotone;
+abstract class DbIconData extends IconData {
+  final bool isMulticolor;
 
-  const DbIconData({
-    required this.line,
-    required this.fill,
-    required this.duotone,
-  });
-
-  IconData fromStyle(DbIconStyle style) {
-    switch (style) {
-      case DbIconStyle.line:
-        return line;
-      case DbIconStyle.fill:
-        return fill;
-      case DbIconStyle.duotone:
-        return duotone;
-    }
-  }
+  const DbIconData(
+    int codePoint, {
+    required this.isMulticolor,
+    required String fontFamily,
+  }) : super(
+          codePoint,
+          fontFamily: fontFamily,
+          fontPackage: 'digibear_icons_flutter',
+        );
 }
 
 /// Extension of the [IconData] class for a [DbIcon] with the line style
-class DbLineIconData extends IconData {
+class DbLineIconData extends DbIconData {
   const DbLineIconData(int codePoint)
       : super(
           codePoint,
+          isMulticolor: false,
           fontFamily: 'DigibearIconLine',
-          fontPackage: 'digibear_icons_flutter',
         );
 }
 
 /// Extension of the [IconData] class for a [DbIcon] with the fill style
-class DbFillIconData extends IconData {
+class DbFillIconData extends DbIconData {
   const DbFillIconData(int codePoint)
       : super(
           codePoint,
+          isMulticolor: false,
           fontFamily: 'DigibearIconFill',
-          fontPackage: 'digibear_icons_flutter',
         );
 }
 
 /// Extension of the [IconData] class for a [DbIcon] with the duotone style
-class DbDuotoneIconData extends IconData {
+class DbDuotoneIconData extends DbIconData {
   final List<IconData>? secondary;
 
   const DbDuotoneIconData(int codePoint, {this.secondary})
       : super(
           codePoint,
+          isMulticolor: true,
           fontFamily: 'DigibearIconDuotone',
-          fontPackage: 'digibear_icons_flutter',
         );
 }

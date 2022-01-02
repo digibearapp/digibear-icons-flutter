@@ -6,6 +6,7 @@
 # All rights reserved.
 
 
+rm ../lib/src/db_icons.dart
 set -e
 
 # get json of releases from github api, use -s for silent
@@ -52,11 +53,11 @@ echo "Extracting font ttf files"
 echo "Generation started using digibear.json files"
 
 echo "Generating package digibear_icons.dart file"
-    dart ./generate_icons.dart ./digibear-icons-line.json
+    dart ./generate_icons.dart ./digibear-icons-line.json true false
     
-    dart ./generate_icons.dart ./digibear-icons-fill.json
+    dart ./generate_icons.dart ./digibear-icons-fill.json false false
     
-    dart ./generate_icons.dart ./digibear-icons-duotone.json
+    dart ./generate_icons.dart ./digibear-icons-duotone.json false true
     
 
 

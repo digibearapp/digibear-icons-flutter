@@ -38,9 +38,11 @@ String generateIconGeneration() {
   final sb = StringBuffer();
 
   for (final iconStyle in DbIconStyle.values) {
+    final isFirst = DbIconStyle.values.first == iconStyle;
+    final isLast = DbIconStyle.values.last == iconStyle;
     final iconStyleName = iconStyle.name;
     final iconGen = '''
-    dart ./generate_icons.dart ./digibear-icons-$iconStyleName.json
+    dart ./generate_icons.dart ./digibear-icons-$iconStyleName.json ${isFirst.toString()} ${isLast.toString()}
     ''';
     sb.writeln(iconGen);
   }
@@ -68,6 +70,7 @@ String generateUpdateSh() {
 
 ${header.replaceAll("//", "#")}
 
+rm ../lib/src/db_icons.dart
 set -e
 
 # get json of releases from github api, use -s for silent

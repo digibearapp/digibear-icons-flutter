@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_positional_boolean_parameters
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -32,8 +34,8 @@ String generateDbIconDefinition(
   List<String> codes,
 ) {
   final iconStyleCappedName = iconStyle.cappedName;
-  final firstCode = codes[0];
-  final restCodes = codes.skip(1);
+  final firstCode = codes.removeLast();
+  final restCodes = codes;
   final secondaryCodes = restCodes.map(
     (code) => generateIconDataInstanceFromIconStyleAndCode(iconStyle, code),
   );
@@ -91,46 +93,57 @@ String generateDbIconsForStyle(dynamic icons, DbIconStyle iconStyle) {
   return sb.toString();
 }
 
-String generateDbIconsForStyles(dynamic icons) {
-  final sb = StringBuffer();
+String generateDbIcons(
+  dynamic icons,
+  DbIconStyle iconStyle,
+  bool isFirst,
+  bool isLast,
+) {
+  final dbIconsForStyle = generateDbIconsForStyle(icons, iconStyle);
 
-  for (final iconStyle in DbIconStyle.values) {
-    final dbIconsForStyle = generateDbIconsForStyle(icons, iconStyle);
-    sb.writeln(dbIconsForStyle);
+  if (isFirst) {
+    return '''
+    library digibear_icons_flutter;
+
+    $header
+
+    import 'package:digibear_icons_flutter/src/db_icon_data.dart';
+
+    abstract class DbIcons {
+      $dbIconsForStyle
+  ''';
+  } else {
+    if (isLast) {
+      return '''
+      $dbIconsForStyle
+      }
+      ''';
+    } else {
+      return dbIconsForStyle;
+    }
   }
-
-  return sb.toString();
-}
-
-String generateDbIcons(dynamic icons) {
-  return '''
-library digibear_icons_flutter;
-
-$header
-
-import 'package:digibear_icons_flutter/src/db_icon_data.dart';
-
-abstract class DigibearIcons {
-  ${generateDbIconsForStyles(icons)}
-}
-''';
 }
 
 void main(List<String> arguments) {
   final jsonFile = File(arguments.first);
   assert(!jsonFile.existsSync());
+  final isFirst = arguments[1] == "true";
+  final isLast = arguments[2] == "true";
   final icons = json.decode(jsonFile.readAsStringSync())['icons'];
   final readStyle = (icons[0]['properties']['name'] as String).split('-').last;
   final iconStyle =
       DbIconStyle.values.where((iconStyle) => iconStyle.name == readStyle);
-  if (iconStyle.isEmpty) {
+  if (iconStyle.isEmpty || iconStyle.length > 1) {
     throw MissingStyleError(
       'Style missing/not matching: got $readStyle but available styles are the following: ${DbIconStyle.values.map((iconStyle) => iconStyle.name)}, you probably have to add the missing style to the ',
     );
   }
 
   final resultFile = File(dbIconsFilePath);
-  resultFile.writeAsStringSync(generateDbIcons(icons));
+  resultFile.writeAsStringSync(
+    generateDbIcons(icons, iconStyle.single, isFirst, isLast),
+    mode: FileMode.append,
+  );
 }
 
 class MissingStyleError extends Error {

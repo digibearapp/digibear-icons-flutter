@@ -16,9 +16,13 @@ class MyApp extends StatelessWidget {
         ),
         body: const Center(
           child: DbIcon(
-            DbIcons.superheroFill,
+            DbIcons.bananaDuotone,
             size: 128,
           ),
+          // child: DbIcon(
+          //   DbIcons.superheroFill,
+          //   size: 128,
+          // ),
         ),
       ),
     );

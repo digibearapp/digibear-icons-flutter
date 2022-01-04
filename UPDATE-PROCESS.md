@@ -9,7 +9,7 @@
 - Test the example `hit run on example/lib/main.dart`
 - Publish to pub.dev
 - Run `git add .`
-- Run `git commit -m "version_number"`
+- Run `git commit -m "v1.0.0"`
 - Run `git push`
 
 # Note
